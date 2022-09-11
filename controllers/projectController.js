@@ -13,8 +13,6 @@ projectRouter.get('/', async (request, response, next) => {
 
 projectRouter.post('/', async (request, response, next) => {
     const { name, description } = request.body;
-    console.log('name: ', name);
-    console.log('description: ', description);
     try {
         const newProject = new Project({
             name,
@@ -22,6 +20,23 @@ projectRouter.post('/', async (request, response, next) => {
         });
         const savedProject = await newProject.save();
         return response.json(savedProject);
+    } catch (error) {
+        next(error);
+    }
+});
+
+projectRouter.put('/:id', async (request, response, next) => {
+    const { id: projectId } = request.params;
+    const { name, description } = request.body;
+    try {
+        const project = {
+            name,
+            description
+        };
+        const updatedProject = await Project.findByIdAndUpdate(projectId, project, { new: true });
+        if (updatedProject) {
+            response.json(updatedProject);
+        }
     } catch (error) {
         next(error);
     }

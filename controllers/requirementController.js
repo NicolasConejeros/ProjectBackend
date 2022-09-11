@@ -14,9 +14,6 @@ requirementRouter.get('/', async (request, response, next) => {
 
 requirementRouter.post('/', async (request, response, next) => {
     const { title, description, acceptanceCriteria, projectId } = request.body;
-    console.log('title: ', title);
-    console.log('description: ', description);
-    console.log('description: ', acceptanceCriteria);
     const project = await Project.findById(projectId);
     const newRequirement = new Requirement({
         title,
@@ -30,6 +27,24 @@ requirementRouter.post('/', async (request, response, next) => {
         project.requirements = project.requirements.concat(savedRequirement);
         await project.save();
         return response.json(savedRequirement);
+    } catch (error) {
+        next(error);
+    }
+});
+
+requirementRouter.put('/:id', async (request, response, next) => {
+    const { id: requirementId } = request.params;
+    const { title, description, acceptanceCriteria } = request.body;
+    try {
+        const requirement = {
+            title,
+            description,
+            acceptanceCriteria
+        };
+        const updatedRequirement = await Requirement.findByIdAndUpdate(requirementId, requirement, { new: true });
+        if (updatedRequirement) {
+            response.json(updatedRequirement);
+        }
     } catch (error) {
         next(error);
     }
