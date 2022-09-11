@@ -5,6 +5,9 @@ const cors = require('cors');
 const app = express();
 const notFound = require('./middleware/notFound');
 
+const projectRouter = require('./controllers/projectController');
+const requirementRouter = require('./controllers/requirementController');
+
 const {
     PORT,
     FRONTEND_DOMAIN_URL
@@ -28,6 +31,9 @@ app.get('/', (req, res) => {
     res.send('Welcome to the API');
 
 });
+
+app.use('/api/projects', projectRouter);
+app.use('/api/requirements', requirementRouter);
 
 // ErrorHandler
 app.use(notFound);
