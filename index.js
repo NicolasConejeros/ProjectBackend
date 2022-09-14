@@ -10,17 +10,17 @@ const requirementRouter = require('./controllers/requirementController');
 
 const {
     PORT,
-    FRONTEND_DOMAIN_URL
+    // FRONTEND_DOMAIN_URL
 } = process.env;
 
 // Middleware
-const corsOptions = {
-    origin: FRONTEND_DOMAIN_URL,
-    exposedHeaders: 'Authorization',
-    credentials: true,
-};
+// const corsOptions = {
+//     origin: FRONTEND_DOMAIN_URL,
+//     exposedHeaders: 'Authorization',
+//     credentials: true,
+// };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 // For POST and PUT requests
 app.use(express.json());

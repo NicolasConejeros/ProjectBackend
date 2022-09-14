@@ -11,6 +11,17 @@ projectRouter.get('/', async (request, response, next) => {
     }
 });
 
+projectRouter.get('/:id', async (request, response, next) => {
+    const { id: projectId } = request.params;
+    console.log('get project');
+    try {
+        const populatedProject = await Project.findById(projectId).populate('requirements');
+        response.json(populatedProject);
+    } catch (error) {
+        next(error);
+    }
+});
+
 projectRouter.post('/', async (request, response, next) => {
     const { name, description } = request.body;
     try {
@@ -19,7 +30,7 @@ projectRouter.post('/', async (request, response, next) => {
             description
         });
         const savedProject = await newProject.save();
-        return response.json(savedProject);
+        response.json(savedProject);
     } catch (error) {
         next(error);
     }
