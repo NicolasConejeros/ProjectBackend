@@ -4,7 +4,17 @@ const Project = require('../models/projectModel');
 projectRouter.get('/', async (request, response, next) => {
     console.log('get all projects');
     try {
-        const populatedProject = await Project.find({}).populate('requirements');
+        const populatedProject = await Project.find({}).sort({createdAt:'desc'}).limit(3);
+        response.json(populatedProject);
+    } catch (error) {
+        next(error);
+    }
+});
+
+projectRouter.get('/myprojects', async (request, response, next) => {
+    console.log('get my projects');
+    try {
+        const populatedProject = await Project.find({}).sort({updatedAt:'desc'});
         response.json(populatedProject);
     } catch (error) {
         next(error);
