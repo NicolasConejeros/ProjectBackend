@@ -2,27 +2,19 @@
 /* eslint-disable no-param-reassign */
 const { Schema, model } = require('mongoose');
 
-const requirementSchema = new Schema({
+const epicSchema = new Schema({
     projectId: {
         type: Schema.Types.ObjectId,
         ref: 'Project',
     },
-    epicId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Epic',
-    },
     title: {
         type: String,
-    },
-    description: {
-        type: String,
-    },
-    acceptanceCriteria: {
-        type: String,
+        required: true,
+        maxLength: 255,
     },
 }, { timestamps: true });
 
-requirementSchema.set('toJSON', {
+epicSchema.set('toJSON', {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id;
         delete returnedObject._id;
@@ -31,5 +23,5 @@ requirementSchema.set('toJSON', {
     },
 });
 
-// Exports requirementSchema as users
-module.exports = model('Requirement', requirementSchema);
+// Exports epicSchema as users
+module.exports = model('Epic', epicSchema);

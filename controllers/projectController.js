@@ -25,7 +25,7 @@ projectRouter.get('/:id', async (request, response, next) => {
     const { id: projectId } = request.params;
     console.log('get project');
     try {
-        const populatedProject = await Project.findById(projectId).populate('requirements');
+        const populatedProject = await Project.findById(projectId);
         response.json(populatedProject);
     } catch (error) {
         next(error);

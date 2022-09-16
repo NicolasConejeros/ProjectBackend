@@ -1,11 +1,21 @@
 const requirementRouter = require('express').Router();
 const Requirement = require('../models/requirementModel');
-const Project = require('../models/projectModel');
 
-requirementRouter.get('/', async (request, response, next) => {
-    console.log('get all requirements');
+// requirementRouter.get('/', async (request, response, next) => {
+//     console.log('get all requirements');
+//     try {
+//         const requirements = await Requirement.find({});
+//         response.json(requirements);
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
+requirementRouter.get('/:id', async (request, response, next) => {
+    const { id: projectId } = request.params;
+    console.log('get all requirements of a project');
     try {
-        const requirements = await Requirement.find({});
+        const requirements = await Requirement.find({ projectId: projectId }).populate('epicId').exec();
         response.json(requirements);
     } catch (error) {
         next(error);
@@ -13,30 +23,46 @@ requirementRouter.get('/', async (request, response, next) => {
 });
 
 requirementRouter.post('/', async (request, response, next) => {
-    const { title, description, acceptanceCriteria, projectId } = request.body;
-    const project = await Project.findById(projectId);
-    const newRequirement = new Requirement({
-        title,
-        description,
-        acceptanceCriteria,
-        projectId
-    });
-    try {
-
-        const savedRequirement = await newRequirement.save();
-        project.requirements = project.requirements.concat(savedRequirement);
-        await project.save();
-        return response.json(savedRequirement);
-    } catch (error) {
-        next(error);
+    const { title, description, acceptanceCriteria, projectId, epicId } = request.body;
+    if (epicId) {
+        const newRequirement = new Requirement({
+            projectId,
+            epicId,
+            title,
+            description,
+            acceptanceCriteria,
+        });
+        try {
+            const savedRequirement = await newRequirement.save();
+            response.json(savedRequirement);
+        } catch (error) {
+            next(error);
+        }
     }
+    else {
+        const newRequirement = new Requirement({
+            projectId,
+            title,
+            description,
+            acceptanceCriteria,
+        });
+        try {
+            const savedRequirement = await newRequirement.save();
+            response.json(savedRequirement);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
 });
 
 requirementRouter.put('/:id', async (request, response, next) => {
     const { id: requirementId } = request.params;
-    const { title, description, acceptanceCriteria } = request.body;
+    const { title, description, acceptanceCriteria, epicId} = request.body;
     try {
         const requirement = {
+            epicId,
             title,
             description,
             acceptanceCriteria

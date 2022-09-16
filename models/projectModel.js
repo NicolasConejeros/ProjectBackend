@@ -11,10 +11,6 @@ const projectSchema = new Schema({
     description: {
         type: String,
     },
-    requirements: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Requirement',
-    }]
 }, { timestamps: true });
 
 projectSchema.set('toJSON', {
