@@ -24,6 +24,7 @@ requirementRouter.get('/:id', async (request, response, next) => {
 
 requirementRouter.post('/', async (request, response, next) => {
     const { title, description, acceptanceCriteria, projectId, epicId } = request.body;
+    console.log(JSON.stringify(epicId,null,2));
     if (epicId) {
         const newRequirement = new Requirement({
             projectId,
