@@ -15,7 +15,7 @@ requirementRouter.get('/:id', async (request, response, next) => {
     const { id: projectId } = request.params;
     console.log('get all requirements of a project');
     try {
-        const requirements = await Requirement.find({ projectId: projectId }).populate('epicId').exec();
+        const requirements = await Requirement.find({ projectId: projectId }).populate({path: 'epicId', select: 'title'}).exec();
         response.json(requirements);
     } catch (error) {
         next(error);

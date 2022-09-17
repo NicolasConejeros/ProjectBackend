@@ -4,8 +4,8 @@ const Project = require('../models/projectModel');
 projectRouter.get('/', async (request, response, next) => {
     console.log('get all projects');
     try {
-        const populatedProject = await Project.find({}).sort({createdAt:'desc'}).limit(3);
-        response.json(populatedProject);
+        const project = await Project.find({}).sort({createdAt:'desc'}).limit(3);
+        response.json(project);
     } catch (error) {
         next(error);
     }
@@ -14,8 +14,8 @@ projectRouter.get('/', async (request, response, next) => {
 projectRouter.get('/myprojects', async (request, response, next) => {
     console.log('get my projects');
     try {
-        const populatedProject = await Project.find({}).sort({updatedAt:'desc'});
-        response.json(populatedProject);
+        const project = await Project.find({}).sort({updatedAt:'desc'});
+        response.json(project);
     } catch (error) {
         next(error);
     }
@@ -25,8 +25,8 @@ projectRouter.get('/:id', async (request, response, next) => {
     const { id: projectId } = request.params;
     console.log('get project');
     try {
-        const populatedProject = await Project.findById(projectId);
-        response.json(populatedProject);
+        const project = await Project.findById(projectId);
+        response.json(project);
     } catch (error) {
         next(error);
     }
