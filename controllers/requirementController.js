@@ -15,7 +15,7 @@ requirementRouter.get('/:id', async (request, response, next) => {
     const { id: projectId } = request.params;
     console.log('get all requirements of a project');
     try {
-        const requirements = await Requirement.find({ projectId: projectId }).populate({path: 'epicId', select: 'title'}).exec();
+        const requirements = await Requirement.find({ projectId: projectId }).populate({ path: 'epicId', select: 'title' }).exec();
         response.json(requirements);
     } catch (error) {
         next(error);
@@ -24,7 +24,7 @@ requirementRouter.get('/:id', async (request, response, next) => {
 
 requirementRouter.post('/', async (request, response, next) => {
     const { title, description, acceptanceCriteria, projectId, epicId } = request.body;
-    console.log(JSON.stringify(epicId,null,2));
+    console.log(JSON.stringify(epicId, null, 2));
     if (epicId) {
         const newRequirement = new Requirement({
             projectId,
@@ -60,7 +60,7 @@ requirementRouter.post('/', async (request, response, next) => {
 
 requirementRouter.put('/:id', async (request, response, next) => {
     const { id: requirementId } = request.params;
-    const { title, description, acceptanceCriteria, epicId} = request.body;
+    const { title, description, acceptanceCriteria, epicId } = request.body;
     try {
         const requirement = {
             epicId,
@@ -72,6 +72,15 @@ requirementRouter.put('/:id', async (request, response, next) => {
         if (updatedRequirement) {
             response.json(updatedRequirement);
         }
+    } catch (error) {
+        next(error);
+    }
+});
+requirementRouter.delete('/:id', async (request, response, next) => {
+    const { id: requirementId } = request.params;
+    try {
+        const requirement = await Requirement.findByIdAndDelete(requirementId);
+        response.json(requirement);
     } catch (error) {
         next(error);
     }
