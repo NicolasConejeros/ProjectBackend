@@ -27,7 +27,7 @@ commentRouter.get('/:id', async (request, response, next) => {
     const { id: requirementId } = request.params;
     console.log('get all comments of a requirement');
     try {
-        const comments = await Comment.find({ requirementId: requirementId }).exec();
+        const comments = await Comment.find({ requirementId: requirementId }).sort({ updatedAt: 'desc' }).exec();
         console.log(comments);
         response.json(comments);
     } catch (error) {
