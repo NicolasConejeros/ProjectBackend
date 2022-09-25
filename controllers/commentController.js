@@ -12,16 +12,17 @@ commentRouter.post('/', async (request, response, next) => {
     }
 });
 
-// commentRouter.get('/:id', async (request, response, next) => {
-//     const { id: epicId } = request.params;
-//     console.log('get epic');
-//     try {
-//         const epic = await Epic.findById(epicId);
-//         response.json(epic);
-//     } catch (error) {
-//         next(error);
-//     }
-// });
+commentRouter.delete('/:id', async (request, response, next) => {
+    const { id: commentId } = request.params;
+    console.log('delete a comment');
+    try {
+        const comments = await Comment.findByIdAndDelete(commentId);
+        console.log(comments);
+        response.json(comments);
+    } catch (error) {
+        next(error);
+    }
+});
 
 commentRouter.get('/:id', async (request, response, next) => {
     const { id: requirementId } = request.params;
