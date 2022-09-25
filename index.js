@@ -8,6 +8,7 @@ const notFound = require('./middleware/notFound');
 const projectRouter = require('./controllers/projectController');
 const requirementRouter = require('./controllers/requirementController');
 const epicRouter = require('./controllers/epicController');
+const commentRouter = require('./controllers/commentController');
 
 const {
     PORT,
@@ -36,6 +37,7 @@ app.get('/', (req, res) => {
 app.use('/api/projects', projectRouter);
 app.use('/api/requirements', requirementRouter);
 app.use('/api/epics', epicRouter);
+app.use('/api/comments', commentRouter);
 
 // ErrorHandler
 app.use(notFound);
