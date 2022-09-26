@@ -3,6 +3,10 @@
 const { Schema, model } = require('mongoose');
 
 const audioSchema = new Schema({
+    roomId:{
+        type: Schema.Types.ObjectId,
+        ref: 'Room'
+    },
     title: {
         type: String,
         required: true

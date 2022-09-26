@@ -12,7 +12,6 @@ projectRouter.get('/', async (request, response, next) => {
 });
 
 projectRouter.get('/myprojects', async (request, response, next) => {
-    console.log('get my projects');
     try {
         const project = await Project.find({}).sort({updatedAt:'desc'});
         response.json(project);
@@ -23,7 +22,6 @@ projectRouter.get('/myprojects', async (request, response, next) => {
 
 projectRouter.get('/:id', async (request, response, next) => {
     const { id: projectId } = request.params;
-    console.log('get project');
     try {
         const project = await Project.findById(projectId);
         response.json(project);

@@ -14,7 +14,6 @@ commentRouter.post('/', async (request, response, next) => {
 
 commentRouter.delete('/:id', async (request, response, next) => {
     const { id: commentId } = request.params;
-    console.log('delete a comment');
     try {
         const comments = await Comment.findByIdAndDelete(commentId);
         console.log(comments);
@@ -26,7 +25,6 @@ commentRouter.delete('/:id', async (request, response, next) => {
 
 commentRouter.get('/:id', async (request, response, next) => {
     const { id: requirementId } = request.params;
-    console.log('get all comments of a requirement');
     try {
         const comments = await Comment.find({ requirementId: requirementId }).sort({ updatedAt: 'desc' }).exec();
         console.log(comments);

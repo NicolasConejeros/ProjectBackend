@@ -1,19 +1,8 @@
 const requirementRouter = require('express').Router();
 const Requirement = require('../models/requirementModel');
 
-// requirementRouter.get('/', async (request, response, next) => {
-//     console.log('get all requirements');
-//     try {
-//         const requirements = await Requirement.find({});
-//         response.json(requirements);
-//     } catch (error) {
-//         next(error);
-//     }
-// });
-
 requirementRouter.get('/:id', async (request, response, next) => {
     const { id: projectId } = request.params;
-    console.log('get all requirements of a project');
     try {
         const requirements = await Requirement.find({ projectId: projectId }).populate({ path: 'epicId', select: 'title' }).exec();
         response.json(requirements);
@@ -24,7 +13,6 @@ requirementRouter.get('/:id', async (request, response, next) => {
 
 requirementRouter.post('/', async (request, response, next) => {
     const { title, description, acceptanceCriteria, projectId, epicId } = request.body;
-    console.log(JSON.stringify(epicId, null, 2));
     if (epicId) {
         const newRequirement = new Requirement({
             projectId,

@@ -14,7 +14,6 @@ epicRouter.post('/', async (request, response, next) => {
 
 epicRouter.get('/:id', async (request, response, next) => {
     const { id: epicId } = request.params;
-    console.log('get epic');
     try {
         const epic = await Epic.findById(epicId);
         response.json(epic);
@@ -25,7 +24,6 @@ epicRouter.get('/:id', async (request, response, next) => {
 
 epicRouter.get('/project/:id', async (request, response, next) => {
     const { id: projectId } = request.params;
-    console.log('get all epics of a project');
     try {
         const epic = await Epic.find({ projectId: projectId }).exec();
         console.log(epic);

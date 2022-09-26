@@ -3,13 +3,18 @@
 const { Schema, model } = require('mongoose');
 
 const roomSchema = new Schema({
+    projectId:{
+        type: Schema.Types.ObjectId,
+        ref: 'Project'
+    },
     name: {
         type: String,
         required: true,
         maxLength: 255,
     },
-    description: {
-        type: String,
+    created: {
+        type: Date,
+        default: Date.now(),
     },
 }, { timestamps: true });
 
