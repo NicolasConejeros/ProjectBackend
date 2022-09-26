@@ -1,5 +1,6 @@
 require('dotenv').config();
 require('./config/mongo');
+require('./config/multer');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -9,6 +10,7 @@ const projectRouter = require('./controllers/projectController');
 const requirementRouter = require('./controllers/requirementController');
 const epicRouter = require('./controllers/epicController');
 const commentRouter = require('./controllers/commentController');
+const audioRouter = require('./controllers/audioController');
 
 const {
     PORT,
@@ -33,11 +35,14 @@ app.get('/', (req, res) => {
     res.send('Welcome to the API');
 
 });
-
+app.use('/uploads', express.static('uploads'));
 app.use('/api/projects', projectRouter);
 app.use('/api/requirements', requirementRouter);
 app.use('/api/epics', epicRouter);
 app.use('/api/comments', commentRouter);
+app.use('/api/audios', audioRouter);
+
+
 
 // ErrorHandler
 app.use(notFound);
