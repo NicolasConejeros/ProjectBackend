@@ -1,6 +1,7 @@
 const audioRouter = require('express').Router();
 const Audio = require('../models/audioModel');
 const upload = require('../config/multer');
+const fs = require('fs');
 
 
 audioRouter.get('/', async (request, response, next) => {
@@ -28,5 +29,25 @@ audioRouter.post('/', upload.upload.single('audio'), async (request, response, n
     }
 });
 
+audioRouter.delete('/:id', async (request, response, next) => {
+    try {
+        const { id: id } = request.params;
+
+
+        const result = await Audio.findByIdAndDelete(id);
+        fs.unlink(result.music.path, (err) => {
+            if (err) {
+                console.error(err);
+            }
+
+            //file removed
+        });
+        console.log(result.music.path);
+        response.status(200).json(result);
+    } catch (error) {
+        response.status(500).json(error);
+        next(error);
+    }
+});
 
 module.exports = audioRouter;

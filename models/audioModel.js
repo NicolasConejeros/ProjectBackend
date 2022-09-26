@@ -20,5 +20,12 @@ const audioSchema = new Schema({
         default: Date.now(),
     }
 });
+audioSchema.set('toJSON', {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id;
+        delete returnedObject._id;
+        delete returnedObject.__v;
+    },
+});
 // Exports roomSchema as room
 module.exports = model('Audio', audioSchema);
