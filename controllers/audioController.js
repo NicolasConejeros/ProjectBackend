@@ -25,7 +25,8 @@ audioRouter.post('/', upload.upload.single('audio'), async (request, response, n
             music: request.file
         });
         const newAudio = await audio.save();
-        response.status(200).json({ data: newAudio });
+        console.log(newAudio);
+        response.status(200).json({ url: `http://localhost:3080/${newAudio.music.path}` });
     } catch (error) {
         response.status(500).json({ error });
         next(error);
