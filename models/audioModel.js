@@ -3,7 +3,7 @@
 const { Schema, model } = require('mongoose');
 
 const audioSchema = new Schema({
-    roomId:{
+    roomId: {
         type: Schema.Types.ObjectId,
         ref: 'Room'
     },
@@ -19,6 +19,14 @@ const audioSchema = new Schema({
         type: String,
         required: true
     },
+    bookmarks: [{
+        time: {
+            type: Number,
+        },
+        color: {
+            type: String,
+        },
+    }],
     created: {
         type: Date,
         default: Date.now(),
