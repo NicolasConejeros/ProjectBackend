@@ -3,9 +3,12 @@
 const { Schema, model } = require('mongoose');
 
 const roomSchema = new Schema({
-    projectId:{
+    projectId: {
         type: Schema.Types.ObjectId,
         ref: 'Project'
+    },
+    slug: {
+        type: String,
     },
     name: {
         type: String,

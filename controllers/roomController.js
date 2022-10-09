@@ -1,5 +1,6 @@
 const roomRouter = require('express').Router();
 const Room = require('../models/roomModel');
+const { convertToSlug, formatedLowerCase } = require('../utils');
 
 roomRouter.get('/project/:id', async (request, response, next) => {
     console.log('get the rooms of a project');

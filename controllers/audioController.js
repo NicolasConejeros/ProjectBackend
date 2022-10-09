@@ -16,7 +16,6 @@ audioRouter.get('/:id', async (request, response, next) => {
 });
 
 audioRouter.post('/', upload.upload.single('audio'), async (request, response, next) => {
-    console.log('entra');
     try {
         const audio = new Audio({
             roomId: request.body.roomId,
@@ -36,8 +35,6 @@ audioRouter.post('/', upload.upload.single('audio'), async (request, response, n
 audioRouter.delete('/:id', async (request, response, next) => {
     try {
         const { id: id } = request.params;
-
-
         const result = await Audio.findByIdAndDelete(id);
         fs.unlink(result.music.path, (err) => {
             if (err) {
@@ -46,6 +43,26 @@ audioRouter.delete('/:id', async (request, response, next) => {
         });
         console.log(result.music.path);
         response.status(200).json(result);
+
+    } catch (error) {
+        response.status(500).json(error);
+        next(error);
+    }
+});
+
+audioRouter.put('/', async (request, response, next) => {
+    try {
+        const id = request.body.id;
+        const audio = {
+            roomId: request.body.roomId,
+            title: request.body.title,
+            music: request.file,
+            artist: request.body.artist,
+            bookmarks: request.body.bookmarks,
+            created: request.body.created,
+        };
+        const updatedAudio = await Audio.findByIdAndUpdate(id, audio, { new: true });
+        response.status(200).json(updatedAudio);
     } catch (error) {
         response.status(500).json(error);
         next(error);
