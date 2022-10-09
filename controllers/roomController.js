@@ -12,11 +12,11 @@ roomRouter.get('/project/:id', async (request, response, next) => {
         next(error);
     }
 });
-roomRouter.get('/:id', async (request, response, next) => {
+roomRouter.get('/search', async (request, response, next) => {
     console.log('retrieving a room');
-    const { id: roomId } = request.params;
+    const { slug } = request.query;
     try {
-        const project = await Room.findById(roomId);
+        const project = await Room.findOne({ slug });
         response.json(project);
     } catch (error) {
         next(error);
@@ -24,10 +24,13 @@ roomRouter.get('/:id', async (request, response, next) => {
 });
 roomRouter.post('/', async (request, response, next) => {
     console.log('add a new room');
+    // const { userId } = request; ESTO PARA CUANDO SE AÑADAN USUARIOS
+    //CAMBIAR EL PROJECTID DEL SLUG A userId
     const { projectId, name } = request.body;
     const newRoom = new Room({
         projectId,
-        name
+        name,
+        slug: convertToSlug(`${projectId.slice(-3)}-${name}`),
     });
     try {
         const savedRoom = await newRoom.save();
