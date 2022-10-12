@@ -136,3 +136,5 @@ mongo-volume/
 .vscode/settings.json
 
 uploads/
+transcriptions/
+python/

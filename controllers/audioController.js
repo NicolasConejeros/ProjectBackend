@@ -2,6 +2,7 @@ const audioRouter = require('express').Router();
 const Audio = require('../models/audioModel');
 const upload = require('../config/multer');
 const fs = require('fs');
+const { exec } = require('child_process');
 
 
 audioRouter.get('/:id', async (request, response, next) => {
@@ -68,5 +69,46 @@ audioRouter.put('/', async (request, response, next) => {
         next(error);
     }
 });
+
+audioRouter.put('/transcribe', async (request, response, next) => {
+    
+    try {
+        const id = request.body.id;
+        const audio = await Audio.findById({ _id: id });
+        let newName = audio.music.filename.substring(0, audio.music.filename.lastIndexOf('.')) || audio.music.filename;
+        const newPath = 'uploads\\' + newName + '.wav';
+        if (audio.music.mimetype != 'audio/wav') {
+            exec(`ffmpeg -i "${audio.music.path}" -ac 1 ${newPath}`, (error, stdout, stderr) => {
+                if (error) {
+                    console.log(`error: ${error.message} `);
+                    return;
+                }
+                if (stderr) {
+                    console.log(`stderr: ${stderr} `);
+                    return;
+                }
+                console.log(`stdout: ${stdout} `);
+            });
+        }
+        newName = 'transcriptions\\' + newName;
+        exec(`python "python\\example\\test_simple.py" ${newPath} ${newName}.txt`, (error, stdout, stderr) => {
+            if (error) {
+                console.log(`error: ${error.message} `);
+                return;
+            }
+            if (stderr) {
+                console.log(`stderr: ${stderr} `);
+                return;
+            }
+            console.log(`stdout: ${stdout} `);
+        });
+        
+        response.status(200).json(audio);
+    } catch (error) {
+        response.status(500).json(error);
+        next(error);
+    }
+});
+
 
 module.exports = audioRouter;

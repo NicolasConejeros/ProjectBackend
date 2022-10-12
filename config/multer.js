@@ -1,11 +1,11 @@
 let multer = require('multer');
-// const path = require('path');
+const path = require('path');
 const storage = multer.diskStorage({
     destination: (req, res, cb) => {
         cb(null, './uploads');
     },
     filename: (req, file, cb) => {
-        cb(null, new Date().toISOString().replace(/:/g, '-') + '.mp3');
+        cb(null, `${file.fieldname}.${Date.now()}-${path.extname(file.originalname)}`);
     }
 });
 const fileFilter = (req, file, cb) => {

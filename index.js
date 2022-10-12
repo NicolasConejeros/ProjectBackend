@@ -12,6 +12,7 @@ const epicRouter = require('./controllers/epicController');
 const commentRouter = require('./controllers/commentController');
 const audioRouter = require('./controllers/audioController');
 const roomRouter = require('./controllers/roomController');
+const transcriptionRouter = require('./controllers/transcriptionController');
 
 const {
     PORT,
@@ -43,6 +44,7 @@ app.use('/api/epics', epicRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/audios', audioRouter);
 app.use('/api/rooms', roomRouter);
+app.use('/api/transcribe', transcriptionRouter);
 
 
 
