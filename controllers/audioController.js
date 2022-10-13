@@ -119,8 +119,9 @@ audioRouter.put('/transcribe', async (request, response, next) => {
             if (audio.music.mimetype != 'audio/wav') await audioToWav(audio, newPath);
             await deleteOldAudio(audio.music.path, newPath);
             audio.music.path = newPath;
-            audio.music.filename = newName;
-            audio.save();
+            audio.music.filename = newName + '.wav';
+            audio.markModified('music');    
+            await audio.save();
             //new path to write the transcription
             newName = 'transcriptions\\' + newName;
             //execute the commands to transcribe the audio
