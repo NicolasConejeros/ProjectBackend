@@ -2,6 +2,7 @@ const audioRouter = require('express').Router();
 const Audio = require('../models/audioModel');
 const upload = require('../config/multer');
 const fs = require('fs');
+const path = require('path');
 const { exec } = require('child_process');
 
 
@@ -37,6 +38,7 @@ audioRouter.delete('/:id', async (request, response, next) => {
     try {
         const { id: id } = request.params;
         const result = await Audio.findByIdAndDelete(id);
+        //delete the audio file
         fs.unlink(result.music.path, (err) => {
             if (err) {
                 console.error(err);
@@ -70,15 +72,59 @@ audioRouter.put('/', async (request, response, next) => {
     }
 });
 
+async function audioToWav(audio, newPath) {
+
+    exec(`ffmpeg -i "${audio.music.path}" -ac 1 ${newPath}`, (error, stdout, stderr) => {
+        if (error) {
+            // console.log(`error: ${error.message} `);
+            return;
+        }
+        if (stderr) {
+            // console.log(`stderr: ${stderr} `);
+            return;
+        }
+        // console.log(`stdout: ${stdout} `);
+    });
+}
+
+async function deleteOldAudio(oldPath, newPath) {
+
+    const timerId = setInterval(() => {
+        const itExists = fs.existsSync(newPath);
+        if (itExists) {
+            fs.unlink(path.join(__dirname, '..\\' + oldPath), (err) => {
+                if (err) {
+                    console.error(err);
+                }
+            });
+
+        }
+        clearInterval(timerId);
+
+    }, 1000);
+
+    return true;
+}
+
 audioRouter.put('/transcribe', async (request, response, next) => {
-    
+    const id = request.body.id;
+    const audio = await Audio.findById({ _id: id });
+    let newName = audio.music.filename.substring(0, audio.music.filename.lastIndexOf('.')) || audio.music.filename;
+    const newPath = 'uploads\\' + newName + '.wav';
     try {
-        const id = request.body.id;
-        const audio = await Audio.findById({ _id: id });
-        let newName = audio.music.filename.substring(0, audio.music.filename.lastIndexOf('.')) || audio.music.filename;
-        const newPath = 'uploads\\' + newName + '.wav';
-        if (audio.music.mimetype != 'audio/wav') {
-            exec(`ffmpeg -i "${audio.music.path}" -ac 1 ${newPath}`, (error, stdout, stderr) => {
+        if (fs.existsSync(path.join(__dirname, '..\\transcriptions\\' + newName + '.txt'))) {
+            response.status(200).json({ si: 'ta listo' });
+        } else {
+            //if the audio file isnt wav(required to transcribe) it will be converted 
+            if (audio.music.mimetype != 'audio/wav') await audioToWav(audio, newPath);
+            await deleteOldAudio(audio.music.path, newPath);
+            audio.music.path = newPath;
+            audio.music.filename = newName;
+            audio.save();
+            //new path to write the transcription
+            newName = 'transcriptions\\' + newName;
+            //execute the commands to transcribe the audio
+            exec(`python "python\\example\\test_simple.py" ${newPath} ${newName}.txt`, (error, stdout, stderr) => {
                 if (error) {
                     console.log(`error: ${error.message} `);
                     return;
@@ -89,23 +135,12 @@ audioRouter.put('/transcribe', async (request, response, next) => {
                 }
                 console.log(`stdout: ${stdout} `);
             });
+
+            response.status(200).json(audio);
         }
-        newName = 'transcriptions\\' + newName;
-        exec(`python "python\\example\\test_simple.py" ${newPath} ${newName}.txt`, (error, stdout, stderr) => {
-            if (error) {
-                console.log(`error: ${error.message} `);
-                return;
-            }
-            if (stderr) {
-                console.log(`stderr: ${stderr} `);
-                return;
-            }
-            console.log(`stdout: ${stdout} `);
-        });
-        
-        response.status(200).json(audio);
+
     } catch (error) {
-        response.status(500).json(error);
+
         next(error);
     }
 });
