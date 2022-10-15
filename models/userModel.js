@@ -23,16 +23,16 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    isTeamMember: {
-        type: Boolean,
-    },
-    socialNetworks: {
-        type: Array,
-    },
-    role: {
-        type: String,
-        required: true,
-    },
+    team: [{
+        teamId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        role: {
+            type: String,
+            required: true,
+        }
+    }],
 }, { timestamps: true });
 
 userSchema.set('toJSON', {
