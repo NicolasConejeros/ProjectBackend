@@ -1,11 +1,13 @@
 const userRouter = require('express').Router();
 const User = require('../models/userModel');
+const isAuth = require('../middleware/isAuth');
 
-userRouter.get('/:id', async (request, response, next) => {
+userRouter.get('/user/me', isAuth, async (request, response, next) => {
     console.log('get a user');
-    const { id: userId } = request.params;
+    const { userId } = request;
+    console.log(userId);
     try {
-        const user = await User.findById({ _id: userId });
+        const user = await User.findById(userId);
         response.json(user);
     } catch (error) {
         next(error);

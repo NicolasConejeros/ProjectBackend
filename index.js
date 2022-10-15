@@ -14,6 +14,8 @@ const audioRouter = require('./controllers/audioController');
 const roomRouter = require('./controllers/roomController');
 const transcriptionRouter = require('./controllers/transcriptionController');
 const userRouter = require('./controllers/userController');
+const signupRouter = require('./controllers/signupController');
+const loginRouter = require('./controllers/loginController');
 
 const {
     PORT,
@@ -47,6 +49,8 @@ app.use('/api/audios', audioRouter);
 app.use('/api/rooms', roomRouter);
 app.use('/api/transcribe', transcriptionRouter);
 app.use('/api/users', userRouter);
+app.use('/api/signup', signupRouter);
+app.use('/api/login', loginRouter);
 
 
 
