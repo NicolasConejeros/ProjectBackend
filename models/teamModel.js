@@ -2,22 +2,25 @@
 /* eslint-disable no-param-reassign */
 const { Schema, model } = require('mongoose');
 
-const projectSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-        maxLength: 255,
-    },
-    description: {
-        type: String,
-    },
-    team: {
+const teamSchema = new Schema({
+    project: {
         type: Schema.Types.ObjectId,
-        ref: 'Team',
+        ref: 'Project',
     },
+    members: [{
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        role: {
+            type: String,
+            required: true,
+        }
+    }],
+
 }, { timestamps: true });
 
-projectSchema.set('toJSON', {
+teamSchema.set('toJSON', {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id;
         delete returnedObject._id;
@@ -26,5 +29,5 @@ projectSchema.set('toJSON', {
     },
 });
 
-// Exports projectSchema as users
-module.exports = model('Project', projectSchema);
+// Exports teamSchema as room
+module.exports = model('Team', teamSchema);

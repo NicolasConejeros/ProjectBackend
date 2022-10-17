@@ -14,6 +14,7 @@ const audioRouter = require('./controllers/audioController');
 const roomRouter = require('./controllers/roomController');
 const transcriptionRouter = require('./controllers/transcriptionController');
 const userRouter = require('./controllers/userController');
+const teamRouter = require('./controllers/teamController');
 const signupRouter = require('./controllers/signupController');
 const loginRouter = require('./controllers/loginController');
 
@@ -51,7 +52,7 @@ app.use('/api/transcribe', transcriptionRouter);
 app.use('/api/users', userRouter);
 app.use('/api/signup', signupRouter);
 app.use('/api/login', loginRouter);
-
+app.use('/api/team', teamRouter);
 
 
 // ErrorHandler

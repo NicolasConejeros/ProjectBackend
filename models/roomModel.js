@@ -19,6 +19,10 @@ const roomSchema = new Schema({
         type: Date,
         default: Date.now(),
     },
+    teamId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
 }, { timestamps: true });
 
 roomSchema.set('toJSON', {

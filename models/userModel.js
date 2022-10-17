@@ -23,7 +23,7 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    team: [{
+    teams: [{
         teamId: {
             type: Schema.Types.ObjectId,
             ref: 'User',
