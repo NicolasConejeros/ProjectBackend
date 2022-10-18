@@ -44,5 +44,19 @@ loginRoute.post('/', async (request, response) => {
         token,
     });
 });
+loginRoute.delete('/', async (request, response) => {
+    if (request.session) {
+        request.session.destroy(error => {
+            if (error) {
+                response.status(400).send('Unable to log out');
+            } else {
+                response.send('Logout successful');
+            }
+        });
+    } else {
+        response.end();
+    }
+});
+
 
 module.exports = loginRoute;
