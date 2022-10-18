@@ -6,10 +6,11 @@ const projectSchema = new Schema({
     name: {
         type: String,
         required: true,
-        maxLength: 255,
+        maxLength: 40,
     },
     description: {
         type: String,
+        maxLength: 150,
     },
     team: {
         type: Schema.Types.ObjectId,

@@ -3,6 +3,11 @@
 const { Schema, model } = require('mongoose');
 
 const teamSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
+        maxLength: 40,
+    },
     project: {
         type: Schema.Types.ObjectId,
         ref: 'Project',

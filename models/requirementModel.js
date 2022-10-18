@@ -13,12 +13,15 @@ const requirementSchema = new Schema({
     },
     title: {
         type: String,
+        maxLength: 40,
     },
     description: {
         type: String,
+        maxLength: 255,
     },
     acceptanceCriteria: {
         type: String,
+        maxLength: 255,
     },
 }, { timestamps: true });
 

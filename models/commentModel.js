@@ -14,6 +14,7 @@ const commentSchema = new Schema({
     content:{
         type: String,
         required: true,
+        maxLength: 255,
     },
     replyTo:{
         type: Schema.Types.ObjectId,

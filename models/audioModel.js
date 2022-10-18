@@ -9,7 +9,8 @@ const audioSchema = new Schema({
     },
     title: {
         type: String,
-        required: true
+        required: true,
+        maxLength: 100,
     },
     music: {
         type: Object,
@@ -17,7 +18,8 @@ const audioSchema = new Schema({
     },
     artist: {
         type: String,
-        required: true
+        required: true,
+        maxLength: 255,
     },
     bookmarks: [{
         time: {

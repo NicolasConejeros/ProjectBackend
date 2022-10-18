@@ -41,6 +41,7 @@ projectRouter.post('/', async (request, response, next) => {
     const { name, description, userId } = request.body;
     try {
         const newTeam = new Team({
+            name: 'Sin nombre',
             members: [{
                 user: userId,
                 role: 'leader',
@@ -53,7 +54,9 @@ projectRouter.post('/', async (request, response, next) => {
             team: newTeam.id
         });
         newTeam.project = newProject.id;
+        console.log(2);
         const savedTeam = await newTeam.save();
+        console.log(1);
         const user = await User.findById(userId);
         user.teams = user.teams.concat({ teamId: savedTeam.id, role: 'leader' });
         user.save();

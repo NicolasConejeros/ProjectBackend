@@ -10,7 +10,7 @@ const epicSchema = new Schema({
     title: {
         type: String,
         required: true,
-        maxLength: 255,
+        maxLength: 40,
     },
 }, { timestamps: true });
 
