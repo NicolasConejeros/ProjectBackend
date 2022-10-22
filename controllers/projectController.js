@@ -30,7 +30,7 @@ projectRouter.get('/myprojects', isAuth, async (request, response, next) => {
 projectRouter.get('/:id', async (request, response, next) => {
     const { id: projectId } = request.params;
     try {
-        const project = await Project.findById(projectId);
+        const project = await Project.findById(projectId).populate('team');
         response.json(project);
     } catch (error) {
         next(error);

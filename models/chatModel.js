@@ -2,30 +2,25 @@
 /* eslint-disable no-param-reassign */
 const { Schema, model } = require('mongoose');
 
-const roomSchema = new Schema({
-    projectId: {
+const chatSchema = new Schema({
+    room: {
         type: Schema.Types.ObjectId,
-        ref: 'Project'
+        ref: 'room',
     },
-    slug: {
-        type: String,
-    },
-    name: {
-        type: String,
-        required: true,
-        maxLength: 40,
-    },
-    created: {
-        type: Date,
-        default: Date.now(),
-    },
-    teamId: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User',
+    chatters: [{
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        },
     }],
+    messages: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Message',
+    }],
+
 }, { timestamps: true });
 
-roomSchema.set('toJSON', {
+chatSchema.set('toJSON', {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id;
         delete returnedObject._id;
@@ -34,5 +29,5 @@ roomSchema.set('toJSON', {
     },
 });
 
-// Exports roomSchema as room
-module.exports = model('Room', roomSchema);
+// Exports chatSchema as room
+module.exports = model('Chat', chatSchema);

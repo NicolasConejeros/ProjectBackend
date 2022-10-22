@@ -3,9 +3,9 @@ require('./config/mongo');
 require('./config/multer');
 const express = require('express');
 const cors = require('cors');
-const app = express();
-const notFound = require('./middleware/notFound');
+const { createServer } = require('http');
 
+const notFound = require('./middleware/notFound');
 const projectRouter = require('./controllers/projectController');
 const requirementRouter = require('./controllers/requirementController');
 const epicRouter = require('./controllers/epicController');
@@ -18,19 +18,33 @@ const teamRouter = require('./controllers/teamController');
 const signupRouter = require('./controllers/signupController');
 const loginRouter = require('./controllers/loginController');
 
+
+const app = express();
+const httpServer = createServer(app);
+const io = require('./socket').init(httpServer);
+
+io.on('connection', (socket) => {
+    console.log('Socket connected');
+    // socket.on('joinRoom',({userId,room}) =>{
+    //     socket.join(room);
+    //     //Welcome user
+    //     socket.broadcast.to(room).emit('message', `${userId} has joined`);
+    // });
+});
+
 const {
     PORT,
-    // FRONTEND_DOMAIN_URL
+    FRONTEND_DOMAIN_URL
 } = process.env;
 
 // Middleware
-// const corsOptions = {
-//     origin: FRONTEND_DOMAIN_URL,
-//     exposedHeaders: 'Authorization',
-//     credentials: true,
-// };
+const corsOptions = {
+    origin: FRONTEND_DOMAIN_URL,
+    exposedHeaders: 'Authorization',
+    credentials: true,
+};
 
-app.use(cors());
+app.use(cors(corsOptions));
 
 // For POST and PUT requests
 app.use(express.json());
@@ -58,9 +72,10 @@ app.use('/api/team', teamRouter);
 // ErrorHandler
 app.use(notFound);
 
-app.listen(PORT, () => {
-    console.log('Server running on port: %d', PORT);
-});
+httpServer.listen(PORT, () => console.log('Server listening on PORT ', PORT));
+// app.listen(PORT, () => {
+//     console.log('Server running on port: %d', PORT);
+// });
 
 module.exports = {
     app,

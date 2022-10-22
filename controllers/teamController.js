@@ -1,26 +1,33 @@
 const teamRouter = require('express').Router();
 const Team = require('../models/teamModel');
+const User = require('../models/userModel');
+const isAuth = require('../middleware/isAuth');
 
-// teamRouter.get('/project/:id', async (request, response, next) => {
-//     console.log('get the rooms of a project');
-//     const { id: projectId } = request.params;
-//     try {
-//         const project = await Team.find({ projectId });
-//         response.json(project);
-//     } catch (error) {
-//         next(error);
-//     }
-// });
-// teamRouter.get('/search', async (request, response, next) => {
-//     console.log('retrieving a room');
-//     const { slug } = request.query;
-//     try {
-//         const project = await Team.findOne({ slug });
-//         response.json(project);
-//     } catch (error) {
-//         next(error);
-//     }
-// });
+teamRouter.put('/', isAuth, async (request, response, next) => {
+    console.log('adding a new member');
+    // const { userId } = request;
+    const { teamId, userEmail, userRole } = request.body;
+    try {
+        if (userRole === 'leader') {
+            const user = User.find({ email: userEmail });
+            if (!user) {
+                response.json({ status: 'error', message: 'user not found' });
+            } else {
+                const team = Team.findById({ id: teamId });
+                team.members.concat({
+                    user: user.id,
+                    role: 'member'
+                });
+                team.save();
+                response.json({ status: 'success', message: 'user added' },team);
+            }
+        }
+    } catch (error) {
+        next(error);
+    }
+
+});
+
 teamRouter.post('/', async (request, response, next) => {
     console.log('add a new team');
     // const { userId } = request; ESTO PARA CUANDO SE AÑADAN USUARIOS

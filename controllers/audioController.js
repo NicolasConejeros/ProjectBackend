@@ -19,6 +19,9 @@ audioRouter.get('/:id', async (request, response, next) => {
 
 audioRouter.post('/', upload.upload.single('audio'), async (request, response, next) => {
     try {
+        console.log(1);
+        console.log(request.body.roomId);
+        console.log(2);
         const audio = new Audio({
             roomId: request.body.roomId,
             title: request.body.title,
