@@ -11,9 +11,7 @@ const messageSchema = new Schema({
     date: {
         type: Date,
         required: true,
-    },
-    received: {
-        type: Boolean,
+        default: Date.now()
     },
     chat: {
         type: Schema.Types.ObjectId,

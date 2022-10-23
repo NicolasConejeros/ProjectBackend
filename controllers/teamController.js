@@ -9,18 +9,28 @@ teamRouter.put('/', isAuth, async (request, response, next) => {
     const { teamId, userEmail, userRole } = request.body;
     try {
         if (userRole === 'leader') {
-            const user = User.find({ email: userEmail });
+            const user = await User.findOne({ email: userEmail });
             if (!user) {
-                response.json({ status: 'error', message: 'user not found' });
+                response.status(400).json({ message: 'user not found' });
             } else {
-                const team = Team.findById({ id: teamId });
-                team.members.concat({
-                    user: user.id,
-                    role: 'member'
-                });
-                team.save();
-                response.json({ status: 'success', message: 'user added' },team);
+                const team = await Team.findById({ _id: teamId });
+                const result = user.teams.find(({ teamId }) => teamId === teamId);
+                if (result) {
+                    response.status(400).json({ message: 'user already in team' });
+                } else {
+                    user.teams = user.teams.concat({ teamId: teamId, role: 'member' });
+                    user.save();
+                    team.members = team.members.concat({
+                        user: user.id,
+                        role: 'member'
+                    });
+                    team.save();
+                    response.status(200).json({ message: 'user added' }, team);
+                }
+
             }
+        } else {
+            response.status(401).json({message: 'you do not have the privileges to do this' });
         }
     } catch (error) {
         next(error);

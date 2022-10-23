@@ -7,6 +7,10 @@ const roomSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Project'
     },
+    chatId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Chat'
+    },
     slug: {
         type: String,
     },
@@ -19,10 +23,10 @@ const roomSchema = new Schema({
         type: Date,
         default: Date.now(),
     },
-    teamId: [{
+    teamId: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
-    }],
+        ref: 'Team',
+    },
 }, { timestamps: true });
 
 roomSchema.set('toJSON', {

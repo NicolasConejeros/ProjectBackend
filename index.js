@@ -17,6 +17,7 @@ const userRouter = require('./controllers/userController');
 const teamRouter = require('./controllers/teamController');
 const signupRouter = require('./controllers/signupController');
 const loginRouter = require('./controllers/loginController');
+const chatRouter = require('./controllers/chatController');
 
 
 const app = express();
@@ -25,11 +26,6 @@ const io = require('./socket').init(httpServer);
 
 io.on('connection', (socket) => {
     console.log('Socket connected');
-    // socket.on('joinRoom',({userId,room}) =>{
-    //     socket.join(room);
-    //     //Welcome user
-    //     socket.broadcast.to(room).emit('message', `${userId} has joined`);
-    // });
 });
 
 const {
@@ -67,6 +63,7 @@ app.use('/api/users', userRouter);
 app.use('/api/signup', signupRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/team', teamRouter);
+app.use('/api/chats', chatRouter);
 
 
 // ErrorHandler

@@ -31,7 +31,6 @@ commentRouter.get('/:id', async (request, response, next) => {
     const { id: requirementId } = request.params;
     try {
         const comments = await Comment.find({ requirementId: requirementId }).sort({ updatedAt: 'desc' }).populate({ path: 'user', select: 'name' }).exec();
-        console.log(comments);
         response.json(comments);
     } catch (error) {
         next(error);
