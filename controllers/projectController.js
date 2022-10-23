@@ -7,9 +7,9 @@ const isAuth = require('../middleware/isAuth');
 projectRouter.get('/', isAuth,async (request, response, next) => {
     console.log('get all projects');
     const { userId } = request;
+
     try {
         const project = await Team.find({ 'members.user': userId }).limit(3).sort({ createdAt: 'desc' }).select({ 'project': 1, '_id': 0 }).populate('project');
-        console.log(project);
         response.json(project);
     } catch (error) {
         next(error);
@@ -28,7 +28,9 @@ projectRouter.get('/myprojects', isAuth, async (request, response, next) => {
 });
 
 projectRouter.get('/:id', async (request, response, next) => {
+
     const { id: projectId } = request.params;
+
     try {
         const project = await Project.findById(projectId).populate('team');
         response.json(project);
@@ -38,7 +40,9 @@ projectRouter.get('/:id', async (request, response, next) => {
 });
 
 projectRouter.post('/', async (request, response, next) => {
+
     const { name, description, userId } = request.body;
+
     try {
         const newTeam = new Team({
             name: 'Sin nombre',
@@ -68,8 +72,10 @@ projectRouter.post('/', async (request, response, next) => {
 });
 
 projectRouter.put('/:id', async (request, response, next) => {
+
     const { id: projectId } = request.params;
     const { name, description } = request.body;
+    
     try {
         const project = {
             name,
