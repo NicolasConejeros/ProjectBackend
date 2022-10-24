@@ -39,14 +39,12 @@ roomRouter.post('/', isAuth, async (request, response, next) => {
         projectId,
         name,
         slug: convertToSlug(`${userId.slice(-3)}-${name}`),
-        teamId: teamId
+        teamId: teamId.id
     });
     try {
         const newchat = new Chat({
             room: newRoom.id,
-            chatters: [{
-                user: userId,
-            }]
+            chatters: teamId.members
         });
         newchat.save();
         newRoom.chatId = newchat.id;
