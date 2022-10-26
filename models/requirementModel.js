@@ -23,6 +23,16 @@ const requirementSchema = new Schema({
         type: String,
         maxLength: 255,
     },
+    timestamp: {
+        audioId: {
+            type: Schema.Types.ObjectId,
+            ref: 'Audio',
+        },
+        timestamp: {
+            type: Number,
+            default: null
+        }
+    }
 }, { timestamps: true });
 
 requirementSchema.set('toJSON', {

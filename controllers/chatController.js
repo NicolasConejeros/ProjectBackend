@@ -23,8 +23,6 @@ chatRouter.post('/', isAuth, async (request, response, next) => {
     const { userId } = request;
     const { text, chat } = request.body;
 
-    console.log('text: ' + text + ' chat: ' + chat);
-
     try {
         const newMessage = new Message({
             text,
@@ -36,7 +34,7 @@ chatRouter.post('/', isAuth, async (request, response, next) => {
         const chatRoom = await Chat.findById({ _id: chat });
         chatRoom.messages = chatRoom.messages.concat(savedMessage._id);
         await chatRoom.save();
-        console.log(savedMessage);
+        
         io.getIO().emit(chat, savedMessage);
         response.json(savedMessage);
     } catch (error) {

@@ -4,6 +4,7 @@ const upload = require('../config/multer');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
+const io = require('../socket');
 
 
 audioRouter.get('/:id', async (request, response, next) => {
@@ -68,6 +69,8 @@ audioRouter.put('/', async (request, response, next) => {
             created: request.body.created,
         };
         const updatedAudio = await Audio.findByIdAndUpdate(id, audio, { new: true });
+        console.log('emiting a room');  
+        io.getIO().to(id).emit('room', updatedAudio.bookmarks);
         response.status(200).json(updatedAudio);
     } catch (error) {
         response.status(500).json(error);

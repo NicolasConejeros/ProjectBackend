@@ -4,7 +4,11 @@ const Requirement = require('../models/requirementModel');
 requirementRouter.get('/:id', async (request, response, next) => {
     const { id: projectId } = request.params;
     try {
-        const requirements = await Requirement.find({ projectId: projectId }).populate({ path: 'epicId', select: 'title' }).exec();
+        const requirements = await Requirement
+            .find({ projectId: projectId })
+            .populate({ path: 'epicId', select: 'title' })
+            .populate({ path: 'timestamp.audioId' })
+            .exec();
         response.json(requirements);
     } catch (error) {
         next(error);
@@ -12,7 +16,7 @@ requirementRouter.get('/:id', async (request, response, next) => {
 });
 
 requirementRouter.post('/', async (request, response, next) => {
-    const { title, description, acceptanceCriteria, projectId, epicId } = request.body;
+    const { title, description, acceptanceCriteria, projectId, epicId, timestamp } = request.body;
     if (epicId) {
         const newRequirement = new Requirement({
             projectId,
@@ -20,6 +24,7 @@ requirementRouter.post('/', async (request, response, next) => {
             title,
             description,
             acceptanceCriteria,
+            timestamp
         });
         try {
             const savedRequirement = await newRequirement.save();
@@ -48,13 +53,14 @@ requirementRouter.post('/', async (request, response, next) => {
 
 requirementRouter.put('/:id', async (request, response, next) => {
     const { id: requirementId } = request.params;
-    const { title, description, acceptanceCriteria, epicId } = request.body;
+    const { title, description, acceptanceCriteria, epicId, timestamp } = request.body;
     try {
         const requirement = {
             epicId,
             title,
             description,
-            acceptanceCriteria
+            acceptanceCriteria,
+            timestamp
         };
         const updatedRequirement = await Requirement.findByIdAndUpdate(requirementId, requirement, { new: true });
         if (updatedRequirement) {
