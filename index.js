@@ -30,6 +30,15 @@ io.on('connection', (socket) => {
         console.log('joining a room');
         socket.join(id);
     });
+
+    socket.on('comments', id => {
+        console.log('joining a comment section ' + id);
+        socket.join(id);
+    });
+    socket.on('leave', id => {
+        console.log('leaving ' + id);
+        socket.leave(id);
+    });
 });
 
 const {

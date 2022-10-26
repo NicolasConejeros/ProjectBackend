@@ -7,8 +7,8 @@ commentRouter.post('/', async (request, response, next) => {
     const newComment = new Comment({ requirementId, user, content, replyTo });
     try {
         const savedComment = await newComment.save();
-
-        io.getIO().emit(requirementId, savedComment);
+        console.log(requirementId);
+        io.getIO().in(requirementId).emit('comments', savedComment);
 
         response.json(savedComment);
     } catch (error) {
