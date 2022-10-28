@@ -27,7 +27,11 @@ const io = require('./socket').init(httpServer);
 io.on('connection', (socket) => {
     console.log('Socket initialized');
     socket.on('room', id => {
-        console.log('joining a room');
+        console.log('joining a room ' + id);
+        socket.join(id);
+    });
+    socket.on('audios', id => {
+        console.log('joining audio room ' + id);
         socket.join(id);
     });
 

@@ -5,7 +5,7 @@ const User = require('../models/userModel');
 const isAuth = require('../middleware/isAuth');
 
 projectRouter.get('/', isAuth,async (request, response, next) => {
-    console.log('get all projects');
+
     const { userId } = request;
 
     try {
@@ -58,14 +58,17 @@ projectRouter.post('/', async (request, response, next) => {
             team: newTeam.id
         });
         newTeam.project = newProject.id;
-        console.log(2);
+
         const savedTeam = await newTeam.save();
-        console.log(1);
+
         const user = await User.findById(userId);
         user.teams = user.teams.concat({ teamId: savedTeam.id, role: 'leader' });
+
         user.save();
         const savedProject = await newProject.save();
+
         response.json(savedProject);
+        
     } catch (error) {
         next(error);
     }

@@ -5,7 +5,7 @@ const isAuth = require('../middleware/isAuth');
 const { convertToSlug } = require('../utils');
 
 roomRouter.get('/project/:id', isAuth, async (request, response, next) => {
-    console.log('get the rooms of a project');
+
     const { id: projectId } = request.params;
 
     try {
@@ -16,7 +16,7 @@ roomRouter.get('/project/:id', isAuth, async (request, response, next) => {
     }
 });
 roomRouter.get('/search', isAuth, async (request, response, next) => {
-    console.log('retrieving a room');
+
     const { userId } = request;
     const { slug } = request.query;
 
@@ -30,10 +30,10 @@ roomRouter.get('/search', isAuth, async (request, response, next) => {
     }
 });
 roomRouter.post('/', isAuth, async (request, response, next) => {
-    console.log('add a new room');
+
     const { userId } = request;
     const { projectId, name, teamId } = request.body;
-    console.log('este team: ' + teamId);
+
 
     const newRoom = new Room({
         projectId,

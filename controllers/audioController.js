@@ -19,19 +19,19 @@ audioRouter.get('/:id', async (request, response, next) => {
 });
 
 audioRouter.post('/', upload.upload.single('audio'), async (request, response, next) => {
+
     try {
-        console.log(1);
-        console.log(request.body.roomId);
-        console.log(2);
+
         const audio = new Audio({
             roomId: request.body.roomId,
             title: request.body.title,
             artist: request.body.artist,
             music: request.file
         });
+
         const newAudio = await audio.save();
-        console.log(newAudio);
         response.status(200).json({ url: `http://localhost:3080/${newAudio.music.path}` });
+
     } catch (error) {
         response.status(500).json({ error });
         next(error);
@@ -39,6 +39,7 @@ audioRouter.post('/', upload.upload.single('audio'), async (request, response, n
 });
 
 audioRouter.delete('/:id', async (request, response, next) => {
+
     try {
         const { id: id } = request.params;
         const result = await Audio.findByIdAndDelete(id);
@@ -48,7 +49,7 @@ audioRouter.delete('/:id', async (request, response, next) => {
                 console.error(err);
             }
         });
-        console.log(result.music.path);
+
         response.status(200).json(result);
 
     } catch (error) {
@@ -58,8 +59,11 @@ audioRouter.delete('/:id', async (request, response, next) => {
 });
 
 audioRouter.put('/', async (request, response, next) => {
+
     try {
         const id = request.body.id;
+        const index = request.body.index;
+        const audioSocket = request.body.audioSocket;
         const audio = {
             roomId: request.body.roomId,
             title: request.body.title,
@@ -68,10 +72,12 @@ audioRouter.put('/', async (request, response, next) => {
             bookmarks: request.body.bookmarks,
             created: request.body.created,
         };
+
         const updatedAudio = await Audio.findByIdAndUpdate(id, audio, { new: true });
-        console.log('emiting a room');  
-        io.getIO().to(id).emit('room', updatedAudio.bookmarks);
+        io.getIO().in(audioSocket).emit('room', updatedAudio.bookmarks, index);
+
         response.status(200).json(updatedAudio);
+
     } catch (error) {
         response.status(500).json(error);
         next(error);
