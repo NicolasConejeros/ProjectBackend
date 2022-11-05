@@ -1,9 +1,10 @@
 const audioRouter = require('express').Router();
 const Audio = require('../models/audioModel');
+const Transcription = require('../models/transcriptionModel');
 const upload = require('../config/multer');
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { exec, execSync } = require('child_process');
 const io = require('../socket');
 
 
@@ -84,9 +85,9 @@ audioRouter.put('/', async (request, response, next) => {
     }
 });
 
-async function audioToWav(audio, newPath) {
+function audioToWav(audio, newPath) {
 
-    exec(`ffmpeg -i "${audio.music.path}" -ac 1 ${newPath}`, (error, stdout, stderr) => {
+    execSync(`ffmpeg -i "${audio.music.path}" -ac 1 ${newPath}`, (error, stdout, stderr) => {
         if (error) {
             // console.log(`error: ${error.message} `);
             return;
@@ -99,57 +100,121 @@ async function audioToWav(audio, newPath) {
     });
 }
 
-async function deleteOldAudio(oldPath, newPath) {
+function deleteOldAudio(oldPath, newPath) {
 
-    const timerId = setInterval(() => {
-        const itExists = fs.existsSync(newPath);
-        if (itExists) {
-            fs.unlink(path.join(__dirname, '..\\' + oldPath), (err) => {
-                if (err) {
-                    console.error(err);
-                }
-            });
 
-        }
-        clearInterval(timerId);
+    const itExists = fs.existsSync(newPath);
+    if (itExists) {
+        fs.unlink(path.join(__dirname, '..\\' + oldPath), (err) => {
+            if (err) {
+                console.error(err);
+            }
+        });
 
-    }, 1000);
+    }
+
+
 
     return true;
 }
 
+
+
+function addText(pathToFile, audioId) {
+
+    const contents = fs.readFileSync(path.join(__dirname, pathToFile), 'utf8');
+    const newTrasncription = new Transcription({
+        audioId: audioId,
+        text: contents
+    });
+    //the file will be deleted to save space
+    fs.unlink(path.join(__dirname, pathToFile), (err) => {
+        if (err) {
+            console.error(err);
+        }
+    });
+    newTrasncription.save();
+
+    return newTrasncription.id;
+}
+
 audioRouter.put('/transcribe', async (request, response, next) => {
+
     const id = request.body.id;
     const audio = await Audio.findById({ _id: id });
+
+    //gets the filename without the extension
     let newName = audio.music.filename.substring(0, audio.music.filename.lastIndexOf('.')) || audio.music.filename;
+    let textPath = newName;
+    //newPath to save the converted audio in case we need it
     const newPath = 'uploads\\' + newName + '.wav';
+
     try {
         if (fs.existsSync(path.join(__dirname, '..\\transcriptions\\' + newName + '.txt'))) {
             response.status(200).json({ si: 'ta listo' });
         } else {
-            //if the audio file isnt wav(required to transcribe) it will be converted 
-            if (audio.music.mimetype != 'audio/wav') await audioToWav(audio, newPath);
-            await deleteOldAudio(audio.music.path, newPath);
-            audio.music.path = newPath;
-            audio.music.filename = newName + '.wav';
-            audio.markModified('music');    
-            await audio.save();
+            //if the audio is not a wav file(required to transcribe) it will be converted 
+            if (audio.music.mimetype != 'audio/wav') {
+
+                //converting the audio
+                audioToWav(audio, newPath);
+
+                //deleting old file
+                deleteOldAudio(audio.music.path, newPath);
+
+                //changing the audio params to match the file
+                audio.music.path = newPath;
+                audio.music.filename = newName + '.wav';
+                audio.music.mimetype = 'audio/wav';
+                //in case mongo doesnt detect the changes, we mark it manually
+                audio.markModified('music');
+            }
+
+
             //new path to write the transcription
             newName = 'transcriptions\\' + newName;
-            //execute the commands to transcribe the audio
-            exec(`python "python\\example\\test_simple.py" ${newPath} ${newName}.txt`, (error, stdout, stderr) => {
-                if (error) {
-                    console.log(`error: ${error.message} `);
-                    return;
+
+            //transcribes the audio
+            exec(`python "python\\example\\test_simple.py" ${newPath} ${newName}.txt`, function (error, stdout, stderr) {
+                console.log('stdout: ' + stdout);
+                console.log('stderr: ' + stderr);
+                //path to the txt file
+                const pathToFile = '..\\transcriptions\\' + textPath + '.txt';
+
+                //it adds the txt to the db, and returns the id of the element that contains it
+                const transcriptionId = addText(pathToFile, id);
+
+                //update the audio params to add the transcription
+                audio.transcription = transcriptionId;
+
+                //in case mongo doesnt detect the changes, we mark it manually
+                audio.markModified('transcription');
+
+                //saves the changes made to the audio element
+                audio.save();
+
+                response.status(200).json(audio);
+                if (error !== null) {
+                    console.log('exec error: ' + error);
                 }
-                if (stderr) {
-                    console.log(`stderr: ${stderr} `);
-                    return;
-                }
-                console.log(`stdout: ${stdout} `);
             });
 
-            response.status(200).json(audio);
+            // //path to the txt file
+            // const pathToFile = '..\\transcriptions\\' + textPath + '.txt';
+
+            // //it adds the txt to the db, and returns the id of the element that contains it
+            // const transcriptionId = addText(pathToFile, id);
+
+            // //update the audio params to add the transcription
+            // audio.transcription = transcriptionId;
+
+            // //in case mongo doesnt detect the changes, we mark it manually
+            // audio.markModified('transcription');
+
+            // //saves the changes made to the audio element
+            // await audio.save();
+
+            // response.status(200).json(audio);
         }
 
     } catch (error) {

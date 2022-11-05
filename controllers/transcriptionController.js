@@ -1,4 +1,4 @@
-const transcriptionController = require('express').Router();
+const transcriptionRouter = require('express').Router();
 const Transcription = require('../models/transcriptionModel');
 const fs = require('fs');
 const path = require('path');
@@ -9,7 +9,7 @@ async function addText(pathToFile) {
     return contents;
 }
 
-transcriptionController.post('/', async (request, response, next) => {
+transcriptionRouter.post('/', async (request, response, next) => {
     const audioId = request.body.audioId;
 
     try {
@@ -26,7 +26,7 @@ transcriptionController.post('/', async (request, response, next) => {
     }
 });
 
-transcriptionController.put('/', async (request, response, next) => {
+transcriptionRouter.put('/', async (request, response, next) => {
     const audioId = request.body.audioId;
     const filename = request.body.filename;
     const pathToFile = '..\\transcriptions\\' + filename;
@@ -57,4 +57,4 @@ transcriptionController.put('/', async (request, response, next) => {
     }
 });
 
-module.exports = transcriptionController;
+module.exports = transcriptionRouter;

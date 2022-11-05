@@ -34,7 +34,6 @@ roomRouter.post('/', isAuth, async (request, response, next) => {
     const { userId } = request;
     const { projectId, name, teamId } = request.body;
 
-
     const newRoom = new Room({
         projectId,
         name,
@@ -42,9 +41,11 @@ roomRouter.post('/', isAuth, async (request, response, next) => {
         teamId: teamId.id
     });
     try {
+
+        const userArray = teamId.members.map(({ user }) => ({ user: user.id }));
         const newchat = new Chat({
             room: newRoom.id,
-            chatters: teamId.members
+            chatters: userArray
         });
         newchat.save();
         newRoom.chatId = newchat.id;

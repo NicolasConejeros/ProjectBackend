@@ -4,7 +4,7 @@ const Team = require('../models/teamModel');
 const User = require('../models/userModel');
 const isAuth = require('../middleware/isAuth');
 
-projectRouter.get('/', isAuth,async (request, response, next) => {
+projectRouter.get('/', isAuth, async (request, response, next) => {
 
     const { userId } = request;
 
@@ -20,7 +20,7 @@ projectRouter.get('/myprojects', isAuth, async (request, response, next) => {
 
     // const { userId } = request;
     try {
-        const projects = await Team.find({}).sort({ updatedAt: 'desc' });    
+        const projects = await Team.find({}).sort({ updatedAt: 'desc' });
         response.json(projects);
     } catch (error) {
         next(error);
@@ -32,7 +32,10 @@ projectRouter.get('/:id', async (request, response, next) => {
     const { id: projectId } = request.params;
 
     try {
-        const project = await Project.findById(projectId).populate('team');
+        let project = await Project.findById(projectId);
+        const team = await Team.findById({ _id: project.team }).populate({ path: 'members.user', select: 'name email id' });
+        project.team = team;
+        console.log(project);
         response.json(project);
     } catch (error) {
         next(error);
@@ -68,7 +71,7 @@ projectRouter.post('/', async (request, response, next) => {
         const savedProject = await newProject.save();
 
         response.json(savedProject);
-        
+
     } catch (error) {
         next(error);
     }
@@ -78,7 +81,7 @@ projectRouter.put('/:id', async (request, response, next) => {
 
     const { id: projectId } = request.params;
     const { name, description } = request.body;
-    
+
     try {
         const project = {
             name,

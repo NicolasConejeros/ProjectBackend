@@ -21,6 +21,10 @@ const audioSchema = new Schema({
         required: true,
         maxLength: 255,
     },
+    transcription: {
+        type: Schema.Types.ObjectId,
+        ref: 'Transcription'
+    },
     bookmarks: [{
         time: {
             type: Number,

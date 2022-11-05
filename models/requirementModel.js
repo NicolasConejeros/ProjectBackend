@@ -27,6 +27,7 @@ const requirementSchema = new Schema({
         audioId: {
             type: Schema.Types.ObjectId,
             ref: 'Audio',
+            required: false
         },
         timestamp: {
             type: Number,

@@ -7,6 +7,7 @@ teamRouter.put('/', isAuth, async (request, response, next) => {
     console.log('adding a new member');
     // const { userId } = request;
     const { teamId, userEmail, userRole } = request.body;
+    console.log(userEmail);
     try {
         if (userRole === 'leader') {
             const user = await User.findOne({ email: userEmail });
@@ -25,13 +26,36 @@ teamRouter.put('/', isAuth, async (request, response, next) => {
                         role: 'member'
                     });
                     team.save();
-                    response.status(200).json({ message: 'user added' }, team);
+                    response.status(200).json(team.members);
                 }
 
             }
         } else {
-            response.status(401).json({message: 'you do not have the privileges to do this' });
+            response.status(401).json({ message: 'you do not have the privileges to do this' });
         }
+    } catch (error) {
+        next(error);
+    }
+
+});
+teamRouter.put('/:id', isAuth, async (request, response, next) => {
+    console.log('removing a member');
+
+    const { id: projectId } = request.params;
+    const { userToRemove: userId } = request.body;
+
+    try {
+
+        let team = await Team.findOne({ project: projectId }).populate({ path: 'members.user', select: 'name email id' });
+        let user = await User.findById({ _id: userId });
+
+        team.members = team.members.filter((user) => user.user.id !== userId);   
+        user.teams = user.teams.filter((userTeam) => !userTeam.teamId.equals(team._id));
+
+        user.markModified('teams');
+        await user.save();
+        await team.save();
+        response.json(team.members);
     } catch (error) {
         next(error);
     }
@@ -55,6 +79,21 @@ teamRouter.post('/', async (request, response, next) => {
     } catch (error) {
         next(error);
     }
+});
+
+teamRouter.get('/:id', isAuth, async (request, response, next) => {
+
+    // const { userId } = request;
+    const { id: projectId } = request.params;
+
+    try {
+        const team = await Team.findOne({ project: projectId }).populate({ path: 'members.user', select: 'name email id' });
+        response.json(team);
+    } catch (error) {
+        next(error);
+    }
+
+
 });
 
 
