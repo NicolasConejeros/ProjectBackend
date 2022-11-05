@@ -35,7 +35,9 @@ chatRouter.post('/', isAuth, async (request, response, next) => {
         const savedMessage = await newMessage.save();
 
         const chatRoom = await Chat.findById({ _id: chat });
-        chatRoom.messages = chatRoom.messages.concat(savedMessage._id);
+
+        chatRoom.messages?
+            chatRoom.messages = chatRoom.messages.concat(savedMessage._id) : chatRoom.messages = [savedMessage._id];
         await chatRoom.save();
         console.log(savedMessage);
         io.getIO().emit(chat, savedMessage);
