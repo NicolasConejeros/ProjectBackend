@@ -42,11 +42,11 @@ roomRouter.post('/', isAuth, async (request, response, next) => {
     });
     try {
         console.log(JSON.stringify(teamId,null,2));
-        const userArray = teamId.members.map(({ user }) => ({ user: user.id }));
+        // const userArray = teamId.members.map(({ user }) => ({ user: user.id }));
         // console.log(userArray);
         const newchat = new Chat({
             room: newRoom.id,
-            chatters: userArray
+            chatters: teamId.id
         });
         newchat.save();
         newRoom.chatId = newchat.id;

@@ -8,13 +8,11 @@ const chatSchema = new Schema({
         ref: 'room',
         required: true
     },
-    chatters: [{
-        user: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-            required: true
-        },
-    }],
+    chatters: {
+        type: Schema.Types.ObjectId,
+        ref: 'Team',
+        required: true
+    },
     messages: [{
         type: Schema.Types.ObjectId,
         ref: 'Message',
