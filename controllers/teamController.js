@@ -41,7 +41,7 @@ teamRouter.put('/', isAuth, async (request, response, next) => {
 });
 teamRouter.put('/:id', isAuth, async (request, response, next) => {
     console.log('removing a member');
-
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
     const { id: projectId } = request.params;
     const { userToRemove: userId } = request.body;
 
@@ -63,29 +63,27 @@ teamRouter.put('/:id', isAuth, async (request, response, next) => {
 
 });
 
-// teamRouter.put('/update', isAuth, async (request, response, next) => {
-//     console.log('update roles');
+teamRouter.put('/update/:id', isAuth, async (request, response, next) => {
+    console.log('update roles');
+    const { id: id } = request.params;
+    const { members } = request.body;
 
-//     const { id: projectId } = request.params;
-//     const { updatedTeam: updatedTeam } = request.body;
+    try {
+        console.log(JSON.stringify(members, null, 2));
 
-//     try {
+        let team = await Team.findOne({ project: id });
 
-//         let team = await Team.findOne({ project: projectId }).populate({ path: 'members.user', select: 'name email id' });
-//         let user = await User.findById({ _id: userId });
+        for (let i = 0; members[i]; i++) {
+            team.members[i].role = members[i].role;
+        }
+        team.markModified('members');
+        team.save();
+        response.json(members);
+    } catch (error) {
+        next(error);
+    }
 
-//         team.members = team.members.filter((user) => user.user.id !== userId);   
-//         user.teams = user.teams.filter((userTeam) => !userTeam.teamId.equals(team._id));
-
-//         user.markModified('teams');
-//         await user.save();
-//         await team.save();
-//         response.json(team.members);
-//     } catch (error) {
-//         next(error);
-//     }
-
-// });
+});
 
 teamRouter.post('/', async (request, response, next) => {
     console.log('add a new team');
