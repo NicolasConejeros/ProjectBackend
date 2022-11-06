@@ -14,7 +14,7 @@ teamRouter.put('/', isAuth, async (request, response, next) => {
             if (!user) {
                 response.status(400).json({ message: 'user not found' });
             } else {
-                const team = await Team.findById({ _id: teamId });
+                let team = await Team.findById({ _id: teamId });
                 const result = user.teams.find(({ teamId }) => teamId === teamId);
                 if (result) {
                     response.status(400).json({ message: 'user already in team' });
@@ -26,7 +26,8 @@ teamRouter.put('/', isAuth, async (request, response, next) => {
                         role: 'member'
                     });
                     team.save();
-                    response.status(200).json(team.members);
+                    team = await team.populate({ path: 'members.user', select: 'name email id' });
+                    response.status(200).json(team);
                 }
 
             }
@@ -49,18 +50,42 @@ teamRouter.put('/:id', isAuth, async (request, response, next) => {
         let team = await Team.findOne({ project: projectId }).populate({ path: 'members.user', select: 'name email id' });
         let user = await User.findById({ _id: userId });
 
-        team.members = team.members.filter((user) => user.user.id !== userId);   
+        team.members = team.members.filter((user) => user.user.id !== userId);
         user.teams = user.teams.filter((userTeam) => !userTeam.teamId.equals(team._id));
 
         user.markModified('teams');
         await user.save();
         await team.save();
-        response.json(team.members);
+        response.json(team);
     } catch (error) {
         next(error);
     }
 
 });
+
+// teamRouter.put('/update', isAuth, async (request, response, next) => {
+//     console.log('update roles');
+
+//     const { id: projectId } = request.params;
+//     const { updatedTeam: updatedTeam } = request.body;
+
+//     try {
+
+//         let team = await Team.findOne({ project: projectId }).populate({ path: 'members.user', select: 'name email id' });
+//         let user = await User.findById({ _id: userId });
+
+//         team.members = team.members.filter((user) => user.user.id !== userId);   
+//         user.teams = user.teams.filter((userTeam) => !userTeam.teamId.equals(team._id));
+
+//         user.markModified('teams');
+//         await user.save();
+//         await team.save();
+//         response.json(team.members);
+//     } catch (error) {
+//         next(error);
+//     }
+
+// });
 
 teamRouter.post('/', async (request, response, next) => {
     console.log('add a new team');

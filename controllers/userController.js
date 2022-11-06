@@ -26,10 +26,6 @@ userRouter.put('/me', isAuth, async (request, response, next) => {
         if(email) user.email= email;
         if(password) user.password= password;
         user.save();
-        // const user = await User.findByIdAndUpdate(userId, {
-        //     $set:
-        //         { 'name': name, 'avatar': avatar, 'description': description, 'email': email, 'password': password, }
-        // }, { new: true }).exec();
         response.json(user);
     } catch (error) {
         next(error);
