@@ -180,7 +180,7 @@ audioRouter.put('/transcribe', async (request, response, next) => {
             newName = 'transcriptions\\' + newName;
 
             //transcribes the audio
-            exec(`python "python\\example\\test_simple.py" ${newPath} ${newName}.txt`, function (error, stdout, stderr) {
+            exec(`python "python\\example\\transcription.py" ${newPath} ${newName}.txt`, function (error, stdout, stderr) {
                 console.log('stdout: ' + stdout);
                 console.log('stderr: ' + stderr);
                 //path to the txt file
