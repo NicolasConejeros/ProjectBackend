@@ -11,7 +11,7 @@ const io = require('../socket');
 audioRouter.get('/:id', async (request, response, next) => {
     const { id: roomId } = request.params;
     try {
-        const audio = await Audio.find({ roomId: roomId });
+        const audio = await Audio.find({ roomId: roomId }).populate({ path: 'transcription' });
         response.json(audio);
     } catch (error) {
         response.json(error);
@@ -40,10 +40,15 @@ audioRouter.post('/', upload.upload.single('audio'), async (request, response, n
 });
 
 audioRouter.delete('/:id', async (request, response, next) => {
+    console.log('entra a borrar');
+
 
     try {
         const { id: id } = request.params;
+
+        console.log('deleting the audio: ' + id);
         const result = await Audio.findByIdAndDelete(id);
+        await Transcription.deleteMany({ audioId: id });
         //delete the audio file
         fs.unlink(result.music.path, (err) => {
             if (err) {
@@ -135,7 +140,7 @@ function addText(pathToFile, audioId) {
     });
     newTrasncription.save();
 
-    return newTrasncription.id;
+    return newTrasncription;
 }
 
 audioRouter.put('/transcribe', async (request, response, next) => {
@@ -182,10 +187,10 @@ audioRouter.put('/transcribe', async (request, response, next) => {
                 const pathToFile = '..\\transcriptions\\' + textPath + '.txt';
 
                 //it adds the txt to the db, and returns the id of the element that contains it
-                const transcriptionId = addText(pathToFile, id);
+                const transcription = addText(pathToFile, id);
 
                 //update the audio params to add the transcription
-                audio.transcription = transcriptionId;
+                audio.transcription = transcription.id;
 
                 //in case mongo doesnt detect the changes, we mark it manually
                 audio.markModified('transcription');
@@ -193,28 +198,11 @@ audioRouter.put('/transcribe', async (request, response, next) => {
                 //saves the changes made to the audio element
                 audio.save();
 
-                response.status(200).json(audio);
+                response.status(200).json(transcription);
                 if (error !== null) {
                     console.log('exec error: ' + error);
                 }
             });
-
-            // //path to the txt file
-            // const pathToFile = '..\\transcriptions\\' + textPath + '.txt';
-
-            // //it adds the txt to the db, and returns the id of the element that contains it
-            // const transcriptionId = addText(pathToFile, id);
-
-            // //update the audio params to add the transcription
-            // audio.transcription = transcriptionId;
-
-            // //in case mongo doesnt detect the changes, we mark it manually
-            // audio.markModified('transcription');
-
-            // //saves the changes made to the audio element
-            // await audio.save();
-
-            // response.status(200).json(audio);
         }
 
     } catch (error) {

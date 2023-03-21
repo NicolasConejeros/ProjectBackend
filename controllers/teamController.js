@@ -15,7 +15,7 @@ teamRouter.put('/', isAuth, async (request, response, next) => {
                 response.status(400).json({ message: 'user not found' });
             } else {
                 let team = await Team.findById({ _id: teamId });
-                const result = user.teams.find(({ teamId }) => teamId === teamId);
+                const result = user.teams.find(({ teamId }) => teamId == team.id);
                 if (result) {
                     response.status(400).json({ message: 'user already in team' });
                 } else {
@@ -41,7 +41,6 @@ teamRouter.put('/', isAuth, async (request, response, next) => {
 });
 teamRouter.put('/:id', isAuth, async (request, response, next) => {
     console.log('removing a member');
-    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
     const { id: projectId } = request.params;
     const { userToRemove: userId } = request.body;
 

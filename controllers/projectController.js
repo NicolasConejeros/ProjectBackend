@@ -18,9 +18,9 @@ projectRouter.get('/', isAuth, async (request, response, next) => {
 
 projectRouter.get('/myprojects', isAuth, async (request, response, next) => {
 
-    // const { userId } = request;
+    const { userId } = request;
     try {
-        const projects = await Team.find({}).sort({ updatedAt: 'desc' });
+        const projects = await Team.find({ 'members.user': userId }).sort({ createdAt: 'desc' }).select({ 'project': 1, '_id': 0 }).populate('project');
         response.json(projects);
     } catch (error) {
         next(error);
