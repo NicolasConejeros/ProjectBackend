@@ -2,9 +2,9 @@
 Web Development
 ### Requirements
 The local installation must have:
-  [vosk](https://alphacephei.com/vosk/install)
-  [ffmpeg](https://ffmpeg.org/download.html)
-  Run the setup of the python version of [pyaudio](https://pypi.org/project/PyAudio/#files)
+  [vosk](https://alphacephei.com/vosk/install), 
+  [ffmpeg](https://ffmpeg.org/download.html),
+  and un the setup of the python version of [pyaudio](https://pypi.org/project/PyAudio/#files)
 
 ## Build Setup
 
