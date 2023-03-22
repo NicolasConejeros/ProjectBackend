@@ -5,14 +5,19 @@ WORKDIR /app
 RUN mkdir uploads
 RUN mkdir transcriptions
 # copy the files to the uploads directory
-ADD uploads app/uploads
+# ADD uploads app/uploads
 # Install dependencies
 COPY package*.json ./
 # Copy the rest of the files
 COPY . . 
 # Install Dependencies
 RUN npm install
-ADD uploads /app/uploads
+RUN npm i nodemon
+RUN apt-get update
+RUN apt install ffmpeg -y
+RUN apt install python3-pip -y
+RUN pip3 install vosk
+# ADD uploads /app/uploads
 COPY . .
 EXPOSE 3080
 CMD ["npm", "run", "dev"]
