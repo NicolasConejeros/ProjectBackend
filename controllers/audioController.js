@@ -92,7 +92,7 @@ audioRouter.put('/', async (request, response, next) => {
 
 function audioToWav(audio, newPath) {
 
-    execSync(`ffmpeg -i "${audio.music.path}" -ac 1 ${newPath}`, (error, stdout, stderr) => {
+    execSync(`ffmpeg -i "/app/${audio.music.path}" -ac 1 ${newPath}`, (error, stdout, stderr) => {
         if (error) {
             // console.log(`error: ${error.message} `);
             return;
@@ -152,10 +152,10 @@ audioRouter.put('/transcribe', async (request, response, next) => {
     let newName = audio.music.filename.substring(0, audio.music.filename.lastIndexOf('.')) || audio.music.filename;
     let textPath = newName;
     //newPath to save the converted audio in case we need it
-    const newPath = 'uploads\\' + newName + '.wav';
+    const newPath = 'uploads/' + newName + '.wav';
 
     try {
-        if (fs.existsSync(path.join(__dirname, '..\\transcriptions\\' + newName + '.txt'))) {
+        if (fs.existsSync(path.join(__dirname, '../transcriptions/' + newName + '.txt'))) {
             response.status(200).json({ si: 'ta listo' });
         } else {
             //if the audio is not a wav file(required to transcribe) it will be converted 
@@ -177,14 +177,14 @@ audioRouter.put('/transcribe', async (request, response, next) => {
 
 
             //new path to write the transcription
-            newName = 'transcriptions\\' + newName;
+            newName = 'transcriptions/' + newName;
 
             //transcribes the audio
-            exec(`python "python\\example\\transcription.py" ${newPath} ${newName}.txt`, function (error, stdout, stderr) {
+            exec(`python3 "python/example/transcription.py" ${newPath} ${newName}.txt`, function (error, stdout, stderr) {
                 console.log('stdout: ' + stdout);
                 console.log('stderr: ' + stderr);
                 //path to the txt file
-                const pathToFile = '..\\transcriptions\\' + textPath + '.txt';
+                const pathToFile = '../transcriptions/' + textPath + '.txt';
 
                 //it adds the txt to the db, and returns the id of the element that contains it
                 const transcription = addText(pathToFile, id);

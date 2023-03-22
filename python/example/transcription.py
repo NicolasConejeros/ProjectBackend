@@ -17,7 +17,7 @@ if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getcomptype() != "NONE
     print("Audio file must be WAV format mono PCM.")
     sys.exit(1)
 
-model = Model(r"D:\Documents\Universidad\Nivel8\Project\Backend\python\es-model")
+model = Model(r"/app/python/es-model")
 
 rec = KaldiRecognizer(model, wf.getframerate())
 rec.SetWords(True)
