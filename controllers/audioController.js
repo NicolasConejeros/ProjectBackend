@@ -92,7 +92,7 @@ audioRouter.put('/', async (request, response, next) => {
 
 function audioToWav(audio, newPath) {
 
-    execSync(`ffmpeg -i "/app/${audio.music.path}" -ac 1 ${newPath}`, (error, stdout, stderr) => {
+    execSync(`ffmpeg -y -i "/app/${audio.music.path}" -ac 1 ${newPath}`, (error, stdout, stderr) => {
         if (error) {
             // console.log(`error: ${error.message} `);
             return;
@@ -110,11 +110,11 @@ function deleteOldAudio(oldPath, newPath) {
 
     const itExists = fs.existsSync(newPath);
     if (itExists) {
-        fs.unlink('/root/proyecto/Backend/' + oldPath), (err) => {
+        fs.unlink(oldPath, (err) => {
             if (err) {
                 console.error(err);
             }
-        };
+        });
 
     }
 
