@@ -31,7 +31,7 @@ audioRouter.post('/', upload.upload.single('audio'), async (request, response, n
         });
 
         const newAudio = await audio.save();
-        response.status(200).json({ url: `http://localhost:3080/${newAudio.music.path}` });
+        response.status(200).json({ url: `http://192.34.57.153:3080/${newAudio.music.path}` });
 
     } catch (error) {
         response.status(500).json({ error });
@@ -110,11 +110,11 @@ function deleteOldAudio(oldPath, newPath) {
 
     const itExists = fs.existsSync(newPath);
     if (itExists) {
-        fs.unlink(path.join(__dirname, '..\\' + oldPath), (err) => {
+        fs.unlink('/root/proyecto/Backend/' + oldPath), (err) => {
             if (err) {
                 console.error(err);
             }
-        });
+        };
 
     }
 
@@ -155,10 +155,10 @@ audioRouter.put('/transcribe', async (request, response, next) => {
     const newPath = 'uploads/' + newName + '.wav';
 
     try {
-        if (fs.existsSync(path.join(__dirname, '../transcriptions/' + newName + '.txt'))) {
+        if (fs.existsSync('/app/transcriptions' + newName + '.txt')) {
             response.status(200).json({ si: 'ta listo' });
         } else {
-            //if the audio is not a wav file(required to transcribe) it will be converted 
+            //if the audio is not a wav file(required to transcribe) it will be converted
             if (audio.music.mimetype != 'audio/wav') {
 
                 //converting the audio
